@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>ACT 5</title>
+        <script src="jquery.js"></script>
+    </head>
+    <body>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 20px;
+            }
+            input, select {
+                margin-bottom: 10px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+            th, td {
+                padding: 8px;
+                text-align: left;
+            }
+            th {
+                background-color: #f2f2f2;
+            }
+            button {
+                margin-right: 5px;
+            }     
+            
+        </style>
+
+        ID: <input type="text" id="id"><br>
+        Employee Last Name: <input type="text" id="lname"><br>
+        Employee First Name: <input type="text" id="fname"><br>
+        Employee Middle Name: <input type="text" id="mname"><br>
+        Employee Position:
+        <select id="position">
+            <option>Manager</option>
+            <option>Supervisor</option>
+            <option>IT Personnel</option>
+            <option>Staff</option>
+        </select><br>
+        Employee Rate: <input type="text" id="rate"><br>
+        Employee Days: <input type="text" id="days"><br><br>
+        <button id="add">ADD RECORD</button>
+        <button id="update">UPDATE</button>
+
+        <table border="1" id="table">
+            <thead>
+                <tr>
+                    <th>EMPLOYEE ID</th>
+                    <th>LAST NAME</th>
+                    <th>FIRST NAME</th>
+                    <th>MIDDLE NAME</th>
+                    <th>POSITION</th>
+                    <th>RATE per Days</th>
+                    <th>DAYS OF WORK</th>
+                    <th>GROSS PAY</th>
+                    <th>DEDUCTIONS</th>
+                    <th>NET PAY</th>
+                    <th>ACTION</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+        <script>
+            $(document).ready(function(){
+                var row;
+
+                $("#add").click(function(){
+                    var id = $("#id").val();
+                    var last = $("#lname").val();
+                    var first = $("#fname").val();
+                    var middle = $("#mname").val();
+                    var position = $("#position").val();
+                    var rate = Number($("#rate").val());
+                    var days = Number($("#days").val());
+
+                    var gross = rate * days;
+                    var deduction = gross * 0.15;
+                    var net = gross - deduction;
+
+                    var row = "<tr>" + 
+                        "<td>"+id+"</td>" + 
+                        "<td>"+last+"</td>" + 
+                        "<td>"+first+"</td>" + 
+                        "<td>"+middle+"</td>" + 
+                        "<td>"+position+"</td>" + 
+                        "<td>"+rate+"</td>" + 
+                        "<td>"+days+"</td>" + 
+                        "<td>"+gross+"</td>" + 
+                        "<td>"+deduction+"</td>" + 
+                        "<td>"+net+"</td>" + "<td>" + "<button class='display'>DISPLAY</button> " + "<button class='edit'>EDIT</button> " + "<button class='delete'>DELETE</button>" + "</td>" + "</tr>";
+
+                    $("#table tbody").append(row);
+
+                    clearFields();
+                });
+
+                $(document).on("click", ".delete", function(){
+                    $(this).closest("tr").remove();
+                });
+
+                $(document).on("click", ".display", function(){
+                    var notif = "EMPLOYEE RECORD\n\n";
+
+                    var currentRow = $(this).closest("tr");
+                    
+                    var grossPay = parseFloat(currentRow.find("td:eq(7)").text());
+                    var sss = grossPay * 0.05;
+                    var pagibig = grossPay * 0.03;
+                    var philhealth = grossPay * 0.02;
+                    var tax = grossPay * 0.05;
+                    var totalDeduction = sss + pagibig + philhealth + tax;
+                    var netPay = grossPay - totalDeduction;
+
+                    notif += "Employee ID: " + currentRow.find("td:eq(0)").text() + "\n";
+                    notif += "Name: " + currentRow.find("td:eq(1)").text() + " " + currentRow.find("td:eq(2)").text() + "\n";
+                    notif += "Middle Name: " + currentRow.find("td:eq(3)").text() + "\n";
+                    notif += "Position: " + currentRow.find("td:eq(4)").text() + "\n";
+                    notif += "Rate per Day: " + currentRow.find("td:eq(5)").text() + "\n";
+                    notif += "Days of Work: " + currentRow.find("td:eq(6)").text() + "\n";
+                    notif += "Gross Pay: " + grossPay.toFixed(2) + "\n";
+                    notif += "Deductions:\n";
+                    notif += "SSS: " + sss.toFixed(2) + "\n";
+                    notif += "Pag-IBIG: " + pagibig.toFixed(2) + "\n";
+                    notif += "PhilHealth: " + philhealth.toFixed(2) + "\n";
+                    notif += "Tax: " + tax.toFixed(2) + "\n";
+                    notif += "Total Deductions: " + totalDeduction.toFixed(2) + "\n";
+                    notif += "Net Pay: " + netPay.toFixed(2) + "\n\n";
+
+                    alert(notif);
+                });
+
+                $(document).on("click", ".edit", function(){
+                    row = $(this).closest("tr");
+
+                    $("#id").val(row.find("td:eq(0)").text());
+                    $("#lname").val(row.find("td:eq(1)").text());
+                    $("#fname").val(row.find("td:eq(2)").text());
+                    $("#mname").val(row.find("td:eq(3)").text());
+                    $("#position").val(row.find("td:eq(4)").text());
+                    $("#rate").val(row.find("td:eq(5)").text());
+                    $("#days").val(row.find("td:eq(6)").text());
+                });
+
+                $("#update").click(function(){
+                    if (row) return;
+
+                    var rate = Number($("#rate").val());
+                    var days = Number($("#days").val());
+
+                    var gross = rate * days;
+                    var deduction = gross * 0.15;
+                    var net = gross - deduction;
+
+                    row.find("td:eq(0)").text($("#id").val());
+                    row.find("td:eq(1)").text($("#lname").val());
+                    row.find("td:eq(2)").text($("#fname").val());
+                    row.find("td:eq(3)").text($("#mname").val());
+                    row.find("td:eq(4)").text($("#position").val());
+                    row.find("td:eq(5)").text(rate);
+                    row.find("td:eq(6)").text(days);
+                    row.find("td:eq(7)").text(gross);
+                    row.find("td:eq(8)").text(deduction);
+                    row.find("td:eq(9)").text(net);
+
+                    clearFields();
+                });
+                
+                function clearFields(){
+                    $("#id").val("");
+                    $("#lname").val("");
+                    $("#fname").val("");
+                    $("#mname").val("");
+                    $("#rate").val("");
+                    $("#days").val("");
+                }
+            });
+        </script>
+    </body>
+</html>
